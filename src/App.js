@@ -9,7 +9,7 @@ function App() {
   const onSendEmail =async (e) => { 
     e.preventDefault();
     try {
-      const result = await axios.post("http://localhost:8000/send-mail", {
+      const result = await axios.post("https://project-send-email-backend.vercel.app/send-mail", {
         email,
         emailBody
       });
