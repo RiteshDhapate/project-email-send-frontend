@@ -1,83 +1,46 @@
-import logo from "./logo.svg";
-import "./App.css";
-import { useState } from "react";
-import axios from "axios";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-function App() {
-  const [email, setEmail] = useState("");
-  const [emailBody, setEmailBody] = useState("");
-  const [userPrompt, setUserPrompt] = useState("");
-
-  const genAI = new GoogleGenerativeAI(
-    "AIzaSyBKZatzIoctt0_arla80wDMgGmZP202jHw"
-  );
-  const sendPrompt = async () => {
+import React, { useEffect, useState } from 'react'
+import axios from 'axios';
+const App = () => {
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const handleSendMessage = async () => {
     try {
-      console.log("sending server prompt");
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-      const prompt = `
-      genrate the one email for me
-      prompt = ${userPrompt}
-      `;
-
-      console.log(userPrompt);
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      console.log(text);
-      setEmailBody(text);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const onSendEmail = async (e) => {
-    e.preventDefault();
-    try {
-      const result = await axios.post("https://project-send-email-backend.vercel.app/send-mail", {
-        email,
-        emailBody,
+      const data = await axios.post("http://localhost:8000/message", {
+        message
       });
-      console.log(result);
+      console.log(data.data.result);
+      setMessages([...messages, { message, result: data.data.result }]);
+      setMessage("");
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
-    console.log({ email, emailBody });
-  };
+  }
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
   return (
-    <div className="contaner">
-      <input type="text" placeholder="Enter Prompt to genrate the email" />
-      <br />
-      <br />
-      <br />
-      <button onClick={sendPrompt}>Genrate email</button>
-      <br />
-      <br />
-      <form onSubmit={(e) => onSendEmail(e)}>
-        <br />
+    <div>
+      {/* messages */}
+      <div>{messages.map((item, index) => (
+        <div>
+          <div>user : {item.message}</div>
+          <div>ai : {item.result}</div>
+        </div>
+      ))}</div>
+      <div>
         <input
-          type="email"
-          placeholder="Enter email.."
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Enter message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+
         />
         <br />
         <br />
-        <textarea
-          name=""
-          id=""
-          value={emailBody}
-          onChange={(e) => setEmailBody(e.target.value)}
-        ></textarea>
-        <br />
-        <br />
-        <button>Send Email</button>
-      </form>
+        <button onClick={handleSendMessage}>Send Message</button>
+      </div>
     </div>
   );
 }
 
-export default App;
+export default App
