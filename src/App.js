@@ -5,7 +5,7 @@ const App = () => {
   const [messages, setMessages] = useState([]);
   const handleSendMessage = async () => {
     try {
-      const data = await axios.post("http://localhost:8000/message", {
+      const data = await axios.post("https://project-send-email-backend.vercel.app/message", {
         message
       });
       console.log(data.data.result);
