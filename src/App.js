@@ -5,7 +5,7 @@ const App = () => {
   const [messages, setMessages] = useState([]);
   const handleSendMessage = async () => {
     try {
-      const data = await axios.post("https://project-send-email-backend.vercel.app/message", {
+      const data = await axios.post("https://project.ritesh.live/message", {
         message
       });
       console.log(data.data.result);
